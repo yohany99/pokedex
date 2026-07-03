@@ -9,11 +9,18 @@ import (
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
-		fmt.Print("Pokedex >")
+		fmt.Print("Pokedex > ")
 		if scanner.Scan() {
 			input := scanner.Text()
 			first := cleanInput(input)[0]
-			fmt.Printf("Your command was: %s\n", first)
+			if val, ok := getCommands()[first]; ok {
+				err := val.callback()
+				if err != nil {
+					fmt.Println(err)
+				}
+			} else {
+				fmt.Println("Unknown command")
+			}
 		}
 	}
 }
