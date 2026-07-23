@@ -29,6 +29,8 @@ func (c *Cache) Add(key string, val []byte) {
 }
 
 func (c *Cache) Get(key string) ([]byte, bool) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	val, ok := c.cacheMap[key]
 	if ok {
 		return val.val, true
@@ -40,6 +42,12 @@ func (c *Cache) Get(key string) ([]byte, bool) {
 func (c *Cache) reapLoop(interval time.Duration) {
 	ticker := time.NewTicker(interval)
 	for range ticker.C {
-
+		c.mu.Lock()
+		for key, ce := range c.cacheMap {
+			if time.Since(ce.createdAt) > interval {
+				delete(c.cacheMap, key)
+			}
+		}
+		c.mu.Unlock()
 	}
 }
