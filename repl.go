@@ -2,6 +2,8 @@ package main
 
 import (
 	"strings"
+
+	"github.com/yohany99/pokedex/internal/pokeapi"
 )
 
 func cleanInput(text string) []string {
@@ -11,8 +13,9 @@ func cleanInput(text string) []string {
 }
 
 type config struct {
-	next     *string
-	previous *string
+	pokeapiClient *pokeapi.Client
+	next          *string
+	previous      *string
 }
 
 type cliCommand struct {
