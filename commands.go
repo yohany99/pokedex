@@ -25,34 +25,46 @@ func commandHelp(cfg *config, args ...string) error {
 }
 
 func commandMap(cfg *config, args ...string) error {
-	locResponse, err := cfg.pokeapiClient.ListLocations(cfg.next)
+	locResp, err := cfg.pokeapiClient.ListLocations(cfg.nextURL)
 	if err != nil {
 		return err
 	}
-	cfg.next = locResponse.Next
-	cfg.previous = locResponse.Previous
-	for _, location := range locResponse.Locations {
+	cfg.nextURL = locResp.NextURL
+	cfg.previousURL = locResp.PreviousURL
+	for _, location := range locResp.Locations {
 		fmt.Println(location.Name)
 	}
 	return nil
 }
 
 func commandMapb(cfg *config, args ...string) error {
-	if cfg.previous == nil {
+	if cfg.previousURL == nil {
 		return errors.New("you're on the first page")
 	}
-	locResponse, err := cfg.pokeapiClient.ListLocations(cfg.previous)
+	locResp, err := cfg.pokeapiClient.ListLocations(cfg.previousURL)
 	if err != nil {
 		return err
 	}
-	cfg.next = locResponse.Next
-	cfg.previous = locResponse.Previous
-	for _, location := range locResponse.Locations {
+	cfg.nextURL = locResp.NextURL
+	cfg.previousURL = locResp.PreviousURL
+	for _, location := range locResp.Locations {
 		fmt.Println(location.Name)
 	}
 	return nil
 }
 
 func commandExplore(cfg *config, args ...string) error {
+	if len(args) == 0 {
+		return errors.New("you must provide a location name")
+	}
+	url := "https://pokeapi.co/api/v2/location-area/"
+	url += args[0]
+	pokemonResp, err := cfg.pokeapiClient.ListPokemon(url)
+	if err != nil {
+		return err
+	}
+	for _, pkm := range pokemonResp.PokemonEncounters {
+		fmt.Println(pkm.Pokemon.Name)
+	}
 	return nil
 }

@@ -18,9 +18,13 @@ func main() {
 		fmt.Print("Pokedex > ")
 		if scanner.Scan() {
 			input := scanner.Text()
-			first := cleanInput(input)[0]
+			args := cleanInput(input)
+			if len(args) == 0 {
+				continue
+			}
+			first := args[0]
 			if val, ok := getCommands()[first]; ok {
-				err := val.callback(cfg)
+				err := val.callback(cfg, args[1:]...)
 				if err != nil {
 					fmt.Println(err)
 				}

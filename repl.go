@@ -14,8 +14,8 @@ func cleanInput(text string) []string {
 
 type config struct {
 	pokeapiClient *pokeapi.Client
-	next          *string
-	previous      *string
+	nextURL       *string
+	previousURL   *string
 }
 
 type cliCommand struct {

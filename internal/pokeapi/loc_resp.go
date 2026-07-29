@@ -8,8 +8,8 @@ import (
 )
 
 type LocResponse struct {
-	Next      *string    `json:"next"`
-	Previous  *string    `json:"previous"`
+	NextURL      *string    `json:"next"`
+	PreviousURL  *string    `json:"previous"`
 	Locations []location `json:"results"`
 }
 
@@ -23,12 +23,12 @@ func (c *Client) ListLocations(url *string) (LocResponse, error) {
 		url = &defaultURL
 	}
 	if val, ok := c.pokeCache.Get(*url); ok {
-		locResponse := LocResponse{}
-		err := json.Unmarshal(val, &locResponse)
+		locResp := LocResponse{}
+		err := json.Unmarshal(val, &locResp)
 		if err != nil {
 			return LocResponse{}, err
 		}
-		return locResponse, nil
+		return locResp, nil
 	}
 	resp, err := http.Get(*url)
 	if err != nil {
@@ -42,11 +42,11 @@ func (c *Client) ListLocations(url *string) (LocResponse, error) {
 	if resp.StatusCode > 299 {
 		return LocResponse{}, fmt.Errorf("response failed with status code: %d and\nbody: %s\n", resp.StatusCode, body)
 	}
-	locResponse := LocResponse{}
-	err = json.Unmarshal(body, &locResponse)
+	locResp := LocResponse{}
+	err = json.Unmarshal(body, &locResp)
 	if err != nil {
 		return LocResponse{}, err
 	}
 	c.pokeCache.Add(*url, body)
-	return locResponse, nil
+	return locResp, nil
 }
