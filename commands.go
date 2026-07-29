@@ -6,13 +6,13 @@ import (
 	"os"
 )
 
-func commandExit(cfg *config) error {
+func commandExit(cfg *config, args ...string) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 	return nil
 }
 
-func commandHelp(cfg *config) error {
+func commandHelp(cfg *config, args ...string) error {
 	fmt.Println()
 	fmt.Println("Welcome to the Pokedex!")
 	fmt.Println("Usage:")
@@ -24,7 +24,7 @@ func commandHelp(cfg *config) error {
 	return nil
 }
 
-func commandMap(cfg *config) error {
+func commandMap(cfg *config, args ...string) error {
 	locResponse, err := cfg.pokeapiClient.ListLocations(cfg.next)
 	if err != nil {
 		return err
@@ -37,7 +37,7 @@ func commandMap(cfg *config) error {
 	return nil
 }
 
-func commandMapb(cfg *config) error {
+func commandMapb(cfg *config, args ...string) error {
 	if cfg.previous == nil {
 		return errors.New("you're on the first page")
 	}
@@ -50,5 +50,9 @@ func commandMapb(cfg *config) error {
 	for _, location := range locResponse.Locations {
 		fmt.Println(location.Name)
 	}
+	return nil
+}
+
+func commandExplore(cfg *config, args ...string) error {
 	return nil
 }
