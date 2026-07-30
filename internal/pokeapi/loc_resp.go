@@ -8,9 +8,9 @@ import (
 )
 
 type LocResponse struct {
-	NextURL      *string    `json:"next"`
-	PreviousURL  *string    `json:"previous"`
-	Locations []location `json:"results"`
+	NextURL     *string    `json:"next"`
+	PreviousURL *string    `json:"previous"`
+	Locations   []location `json:"results"`
 }
 
 type location struct {
