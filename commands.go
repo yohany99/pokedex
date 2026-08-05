@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"math/rand/v2"
 	"os"
+
+	"github.com/yohany99/pokedex/internal/pokeapi"
 )
 
 func commandExit(cfg *config, args ...string) error {
@@ -60,13 +62,13 @@ func commandExplore(cfg *config, args ...string) error {
 	}
 	url := "https://pokeapi.co/api/v2/location-area/"
 	url += args[0]
-	pokemonResp, err := cfg.pokeapiClient.ListPokemon(url)
+	pkmEncountersResp, err := cfg.pokeapiClient.ListPokemon(url)
 	if err != nil {
 		return err
 	}
 	fmt.Printf("Exploring %s...\n", args[0])
 	fmt.Println("Found Pokemon: ")
-	for _, pkm := range pokemonResp.PokemonEncounters {
+	for _, pkm := range pkmEncountersResp.Encounters {
 		fmt.Println(pkm.Pokemon.Name)
 	}
 	return nil
@@ -76,17 +78,30 @@ func commandCatch(cfg *config, args ...string) error {
 	if len(args) == 0 {
 		return errors.New("you must provide a pokemon name")
 	}
-	//pkmStatResp, err := cfg.pokeapiClient.FetchPokemonStats(args[0])
-	//if err != nil {
-	//return err
-	//}
+	pokemon, err := cfg.pokeapiClient.CatchPokemon(args[0])
+	if err != nil {
+		return err
+	}
 	fmt.Printf("Throwing a Pokeball at %s...\n", args[0])
-	randomNumber := rand.IntN(10) + 1
-	if randomNumber >= 7 {
+	randomNumber := rand.IntN(pokemon.Exp) + 1
+	if randomNumber <= 40 {
 		fmt.Printf("%s was caught!\n", args[0])
+		cfg.pokemonCaught[args[0]] = pokemon
 
 	} else {
 		fmt.Printf("%s escaped!\n", args[0])
 	}
 	return nil
+}
+
+func commandInspect(cfg *config, args ...string) error {
+	if len(args) == 0 {
+		return errors.New("you must provide a pokemon name")
+	}
+	if pokemon, ok := cfg.pokemonCaught[args[0]]; ok {
+		pokeapi.PrintStats(pokemon)
+		return nil
+	} else {
+		return errors.New("you have not caught that pokemon")
+	}
 }
